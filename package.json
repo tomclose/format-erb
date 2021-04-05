@@ -1,0 +1,97 @@
+{
+  "name": "format-erb",
+  "publisher": "tomclose",
+  "displayName": "FormatERB",
+  "description": "Format ERB using the htmlbeautifier gem",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.55.0"
+  },
+  "categories": [
+    "Formatters"
+  ],
+  "activationEvents": [
+    "onLanguage:erb"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "erb",
+        "extensions": [
+          ".erb",
+          ".html.erb"
+        ]
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Format ERB settings",
+      "properties": {
+        "format-erb.commandPath": {
+          "type": "string",
+          "default": "htmlbeautifier",
+          "description": "Path to the htmlbeautify command.  Set this to an absolute path to select from multiple installed Ruby versions.",
+          "scope": "resource"
+        },
+        "format-erb.useBundler": {
+          "type": "boolean",
+          "description": "Use `bundle exec` to run htmlbeautify. (If this is true, the format-erb.commandPath setting is ignored.)",
+          "default": false
+        },
+        "format-erb.bundlerPath": {
+          "type": "string",
+          "description": "Path to the bundle executable, defaults to 'bundle'. Needs to be an absolute path for the 'bundle' exec/shim",
+          "default": "bundle",
+          "scope": "resource"
+        },
+        "format-erb.tabStops": {
+          "type": "number",
+          "default": 2,
+          "description": "Set number of spaces per indent (default 2)"
+        },
+        "format-erb.tab": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indent using tabs"
+        },
+        "format-erb.indentBy": {
+          "type": "number",
+          "default": 0,
+          "description": "Indent the output by NUMBER steps (default 0)"
+        },
+        "format-erb.stopOnErrors": {
+          "type": "boolean",
+          "default": false,
+          "description": "Stop when invalid nesting is encountered in the input"
+        },
+        "format-erb.keepBlankLines": {
+          "type": "number",
+          "default": 1,
+          "description": "Set number of consecutive blank lines (default 0)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.55.0",
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^12.11.7",
+    "eslint": "^7.19.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
+    "@typescript-eslint/parser": "^4.14.1",
+    "glob": "^7.1.6",
+    "mocha": "^8.2.1",
+    "typescript": "^4.1.3",
+    "vscode-test": "^1.5.0"
+  }
+}
