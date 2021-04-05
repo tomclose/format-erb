@@ -3,6 +3,10 @@
   "publisher": "tomclose",
   "displayName": "FormatERB",
   "description": "Format ERB using the htmlbeautifier gem",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomclose/format-erb"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.55.0"
