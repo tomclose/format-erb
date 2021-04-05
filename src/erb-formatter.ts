@@ -24,7 +24,7 @@ export class ErbFormatter {
   }
 
   get command(): string {
-    if (this._config["useBundler"]) {
+    if (this.useBundler) {
       return `${this._config["bundlerPath"]} exec htmlbeautifier`;
     } else {
       return `${this._config["commandPath"]}`;
@@ -34,22 +34,48 @@ export class ErbFormatter {
   provideDocumentFormattingEdits(
     document: vscode.TextDocument
   ): vscode.TextEdit[] {
-    const cmd = `${this.command} ${this.getArgs().join(" ")}`;
-    this.log(`executing command: ${cmd}`);
-    const startTime = hrtime();
-    const stdout = execSync(cmd, {
-      cwd: getCurrentPath(document.fileName),
-      input: document.getText(),
-    });
-    const [secs, nanosecs] = hrtime(startTime);
-    this.log(
-      `command completed in ${secs}s ${Math.round(nanosecs / 1000000)}ms`
-    );
-
-    return [
-      new vscode.TextEdit(this.getFullRange(document), stdout.toString()),
-    ];
+    try {
+      const cmd = `${this.command} ${this.getArgs().join(" ")}`;
+      this.log(`executing command: ${cmd}`);
+      const startTime = hrtime();
+      const stdout = execSync(cmd, {
+        cwd: getCurrentPath(document.fileName),
+        input: document.getText(),
+      });
+      const [secs, nanosecs] = hrtime(startTime);
+      this.log(
+        `command completed in ${secs}s ${Math.round(nanosecs / 1000000)}ms`
+      );
+      return [
+        new vscode.TextEdit(this.getFullRange(document), stdout.toString()),
+      ];
+    } catch (e) {
+      this.log(`command failed: ${e.message}`);
+      if (this.useBundler && !this.detectBundledHtmlbeautifier()) {
+        vscode.window.showErrorMessage(
+          "htmlbeautifier not found by bundler. Add `gem 'htmlbeautifier'` to your Gemfile and run `bundle install`."
+        );
+      } else {
+        vscode.window.showErrorMessage(`format-erb failed: ${e.message}`);
+      }
+      return [];
+    }
   }
+
+  get useBundler(): boolean {
+    return this._config["useBundler"];
+  }
+
+  detectBundledHtmlbeautifier: () => boolean = () => {
+    try {
+      execSync(`${this._config["bundlerPath"]} show htmlbeautifier`, {
+        cwd: firstWorkspace() || undefined,
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
 
   private log(text: string) {
     console.log(text);
